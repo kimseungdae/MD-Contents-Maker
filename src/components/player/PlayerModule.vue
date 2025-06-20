@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="absolute bg-white rounded-lg shadow-sm border p-4"
-    :style="moduleStyle"
-  >
+  <div class="absolute bg-white rounded-lg shadow-sm border p-4" :style="moduleStyle">
     <!-- 객관식 -->
     <div v-if="module.type === '객관식'" class="space-y-3">
       <h3 class="font-medium text-text-primary">{{ module.properties.question }}</h3>
@@ -39,7 +36,12 @@
 
     <!-- 이미지표시 -->
     <div v-else-if="module.type === '이미지표시'" class="text-center">
-      <div class="bg-gray-100 rounded-lg p-8">
+      <img
+        v-if="module.properties.src"
+        :src="module.properties.src"
+        class="max-h-60 mx-auto rounded"
+      />
+      <div v-else class="bg-gray-100 rounded-lg p-8">
         <div class="text-4xl mb-2">🖼️</div>
         <div class="text-sm text-text-muted">이미지가 여기에 표시됩니다</div>
       </div>
@@ -93,22 +95,22 @@ const moduleStyle = computed(() => ({
   left: `${props.module.position.x}px`,
   top: `${props.module.position.y}px`,
   width: `${props.module.size.width}px`,
-  minWidth: '200px'
+  minWidth: '200px',
 }))
 
 const getModuleIcon = (type: string): string => {
   const icons: Record<string, string> = {
-    '자': '📏',
-    '시계': '🕐',
-    '선잇기': '✏️',
-    '색칠하기': '🎨',
-    '드래그앤드롭': '👆',
-    '블록놀이': '🧩',
-    '퍼즐': '🧩',
-    '수식입력': '📝',
-    '동영상': '🎥',
-    '음성': '🔊',
-    '서술형': '📝'
+    자: '📏',
+    시계: '🕐',
+    선잇기: '✏️',
+    색칠하기: '🎨',
+    드래그앤드롭: '👆',
+    블록놀이: '🧩',
+    퍼즐: '🧩',
+    수식입력: '📝',
+    동영상: '🎥',
+    음성: '🔊',
+    서술형: '📝',
   }
   return icons[type] || '📦'
 }
