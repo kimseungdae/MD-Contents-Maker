@@ -26,7 +26,11 @@
           class="w-full text-sm border-0 border-b border-gray-200 focus:border-primary focus:ring-0 mb-2"
         />
         <div class="space-y-1">
-          <div v-for="(option, index) in localProperties.options" :key="index" class="flex items-center">
+          <div
+            v-for="(option, index) in localProperties.options"
+            :key="index"
+            class="flex items-center"
+          >
             <input
               v-model="localProperties.options[index]"
               type="text"
@@ -45,16 +49,16 @@
           placeholder="질문을 입력하세요"
           class="w-full text-sm border-0 border-b border-gray-200 focus:border-primary focus:ring-0 mb-2"
         />
-        <div class="border border-gray-200 rounded p-2 text-xs text-text-muted">
-          답안 입력 영역
-        </div>
+        <div class="border border-gray-200 rounded p-2 text-xs text-text-muted">답안 입력 영역</div>
       </div>
 
       <!-- 이미지표시 -->
-      <div v-else-if="module.type === '이미지표시'" class="w-full">
+      <div v-else-if="module.type === '이미지표시'" class="w-full space-y-2">
+        <div v-if="localProperties.src" class="text-center">
+          <img :src="localProperties.src" alt="미리보기" class="max-h-40 mx-auto rounded" />
+        </div>
         <div class="border-2 border-dashed border-gray-200 rounded p-4 text-center">
-          <div class="text-2xl mb-2">🖼️</div>
-          <div class="text-xs text-text-muted">이미지 업로드</div>
+          <input type="file" accept="image/*" @change="onImageChange" class="w-full text-xs" />
         </div>
       </div>
 
@@ -69,11 +73,7 @@
     <div v-if="showProperties" class="mt-4 pt-4 border-t border-gray-200">
       <div class="space-y-2">
         <label class="flex items-center text-xs">
-          <input
-            v-model="localModule.checkAnswer"
-            type="checkbox"
-            class="mr-2"
-          />
+          <input v-model="localModule.checkAnswer" type="checkbox" class="mr-2" />
           정답 확인
         </label>
         <div v-if="localModule.checkAnswer">
@@ -120,24 +120,34 @@ const moduleStyle = computed(() => ({
   left: `${localModule.position.x}px`,
   top: `${localModule.position.y}px`,
   width: `${localModule.size.width}px`,
-  minHeight: `${localModule.size.height}px`
+  minHeight: `${localModule.size.height}px`,
 }))
 
 const getModuleIcon = (type: string): string => {
   const icons: Record<string, string> = {
-    '각도기': '📐',
-    '자': '📏',
-    '시계': '🕐',
-    '선잇기': '✏️',
-    '색칠하기': '🎨',
-    '드래그앤드롭': '👆',
-    '블록놀이': '🧩',
-    '퍼즐': '🧩',
-    '수식입력': '📝',
-    '동영상': '🎥',
-    '음성': '🔊'
+    각도기: '📐',
+    자: '📏',
+    시계: '🕐',
+    선잇기: '✏️',
+    색칠하기: '🎨',
+    드래그앤드롭: '👆',
+    블록놀이: '🧩',
+    퍼즐: '🧩',
+    수식입력: '📝',
+    동영상: '🎥',
+    음성: '🔊',
   }
   return icons[type] || '📦'
+}
+
+const onImageChange = (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => {
+    localProperties.src = reader.result as string
+  }
+  reader.readAsDataURL(file)
 }
 
 const startDrag = (event: MouseEvent) => {
@@ -162,7 +172,7 @@ const startDrag = (event: MouseEvent) => {
 const emitUpdate = () => {
   const updatedModule: Module = {
     ...localModule,
-    properties: { ...localProperties }
+    properties: { ...localProperties },
   }
   emit('update', updatedModule)
 }
